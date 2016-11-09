@@ -24,6 +24,9 @@
             white-space: nowrap;
             max-width: 100%;
         }
+        li.listtable > ul > li.item.selected {
+            border: 2px solid red;
+        }
         ul.flex-col {
             display: flex;
             flex-direction: column;
@@ -52,31 +55,36 @@
     <body>
         <div id="app">
             <ul class="space-between">
-                <barlist v-bind:list="listA"></barlist>
+                <barlist v-bind:list="listA" v-bind:selection="selected"></barlist>
                 <li class="buttons">
                     <ul class="flex-col center">
                         <li class="move">
-                            <button>←</button>
-                            <button>→</button>
+                            <button v-on:click="moveLeft">←</button>
+                            <button v-on:click="moveRight">→</button>
                         </li>
                     </ul>
                 </li>
-                <barlist v-bind:list="listB"></barlist>
+                <barlist v-bind:list="listB" v-bind:selection="selected"></barlist>
             </ul>
         </div>
         <script>
 
 Vue.component('barlist', {
-    props: ['list'],
+    props: ['list', 'selection'],
     template: 
         `<li class='listtable'>
             <div class="caption">{{ list.title }}</div>
             <ul class='flex-col'>
-                <li v-for="itm in list.items" class="item">
+            <li v-for="itm in list.items" class="item" v-bind:class="{selected: itm.id == selection.id }" v-on:click="select(itm.id)">
                     {{ itm.name }}
                 </li>
             </ul>
-        </li>`
+        </li>`,
+    methods: {
+        select: function(id){
+            this.selection.id = id;
+        }
+    }
 })
 var app = new Vue({
     el: '#app',
@@ -84,25 +92,30 @@ var app = new Vue({
         listA: {
             title: 'リストA',
             items: [ 
-                { name: '★'},
-                { name: '□'},
-                { name: '〇'},
-                { name: '〇'},
-                { name: '〇'},
-                { name: '〇'},
-                { name: '〇'},
-                { name: '〇'},
-                { name: '〇'}
+                { id: 1, name: '★'},
+                { id: 2, name: '□'},
+                { id: 3, name: '〇'},
+                { id: 4, name: '〇'},
+                { id: 5, name: '〇'},
+                { id: 6, name: '〇'},
+                { id: 7, name: '〇'},
+                { id: 8, name: '〇'},
+                { id: 9, name: '〇'}
             ]
         },
         listB: {
             title: 'リストB',
             items: [ 
-                { name: 'あいうえお'},
-                { name: 'かきくけこ'},
-                { name: 'さしすせそたちつてとなにぬねのはひふへほ'}
-            ]
-        }
+                { id: 10, name: 'あいうえお'},
+                { id: 11, name: 'かきくけこ'},
+                { id: 12, name: 'さしすせそたちつてとなにぬねのはひふへほ'}
+            ],
+        }, 
+        selected: { id: 11}
+    },
+    methods: {
+        moveLeft: function() {},
+        moveRight: function() {}
     }
 })
         </script>
