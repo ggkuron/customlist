@@ -75,14 +75,15 @@ Vue.component('barlist', {
         `<li class='listtable'>
             <div class="caption">{{ list.title }}</div>
             <ul class='flex-col'>
-            <li v-for="itm in list.items" class="item" v-bind:class="{selected: itm.id == selection.id }" v-on:click="select(itm.id)">
+                <li v-for="itm in list.items" class="item" v-bind:class="{selected: itm.id == selection.id }" v-on:click="select(itm)">
                     {{ itm.name }}
                 </li>
             </ul>
         </li>`,
     methods: {
-        select: function(id){
-            this.selection.id = id;
+        select: function(itm){
+            this.selection.id = itm.id;
+            this.selection.name = itm.name;
         }
     }
 })
@@ -111,11 +112,17 @@ var app = new Vue({
                 { id: 12, name: 'さしすせそたちつてとなにぬねのはひふへほ'}
             ],
         }, 
-        selected: { id: 11}
+        selected: { id: 0, name:''}
     },
     methods: {
-        moveLeft: function() {},
-        moveRight: function() {}
+        moveLeft: function() {
+            this.listA.items.push({id: this.selected.id, name: this.selected.name});
+            this.listB.items = this.listB.items.filter(itm => itm.id !== this.selected.id);
+        },
+        moveRight: function() {
+            this.listB.items.push({id: this.selected.id, name: this.selected.name});
+            this.listA.items = this.listA.items.filter(itm => itm.id !== this.selected.id);
+        }
     }
 })
         </script>
