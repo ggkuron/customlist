@@ -1,0 +1,110 @@
+<html>
+    <head>
+        <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <style>
+        ul, li {
+            list-style: none;
+            padding: 0;
+        }
+        #app {
+            height: 200px;
+        }
+        div.caption {
+            margin-bottom: 0.3em;
+        }
+        li.listtable > ul {
+            border: 1px solid #3f3f3f;
+            width: 100%;
+            overflow-y: auto;
+            height: 100%;
+        }
+        li.listtable > ul > li.item {
+            border: 1px solid #efefef;
+            padding: 0.8em;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+        ul.flex-col {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        ul.space-between {
+            display: flex;
+            justify-content: space-between;
+        }
+        ul.center {
+            display: flex;
+            justify-content: center;
+        }
+
+        li.listtable {
+            flex: 2;
+        }
+        li.buttons {
+            flex: 1;
+        }
+        li.buttons li.move {
+            margin: 0 auto;
+        }
+    </style>
+    </head>
+    <body>
+        <div id="app">
+            <ul class="space-between">
+                <barlist v-bind:list="listA"></barlist>
+                <li class="buttons">
+                    <ul class="flex-col center">
+                        <li class="move">
+                            <button>←</button>
+                            <button>→</button>
+                        </li>
+                    </ul>
+                </li>
+                <barlist v-bind:list="listB"></barlist>
+            </ul>
+        </div>
+        <script>
+
+Vue.component('barlist', {
+    props: ['list'],
+    template: 
+        `<li class='listtable'>
+            <div class="caption">{{ list.title }}</div>
+            <ul class='flex-col'>
+                <li v-for="itm in list.items" class="item">
+                    {{ itm.name }}
+                </li>
+            </ul>
+        </li>`
+})
+var app = new Vue({
+    el: '#app',
+    data: {
+        listA: {
+            title: 'リストA',
+            items: [ 
+                { name: '★'},
+                { name: '□'},
+                { name: '〇'},
+                { name: '〇'},
+                { name: '〇'},
+                { name: '〇'},
+                { name: '〇'},
+                { name: '〇'},
+                { name: '〇'}
+            ]
+        },
+        listB: {
+            title: 'リストB',
+            items: [ 
+                { name: 'あいうえお'},
+                { name: 'かきくけこ'},
+                { name: 'さしすせそたちつてとなにぬねのはひふへほ'}
+            ]
+        }
+    }
+})
+        </script>
+    </body>
+</html>
