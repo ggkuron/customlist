@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-    <meta charset="UTF-8">
+        <meta charset="UTF-8">
         <script src="https://unpkg.com/vue/dist/vue.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.6/lodash.min.js"></script>
     <style>
@@ -63,7 +63,7 @@
     <body>
         <div id="app">
             <ul class="space-between">
-                <barlist v-bind:list="listA" v-bind:selection="selected"></barlist>
+                <barlist v-bind:list="listA" v-bind:selection="selected" @select='update'></barlist>
                 <li class="buttons">
                     <ul class="flex-col center">
                         <li class="move">
@@ -72,10 +72,26 @@
                         </li>
                     </ul>
                 </li>
-                <barlist v-bind:list="listB" v-bind:selection="selected"></barlist>
+                <barlist v-bind:list="listB" v-bind:selection="selected" @select='update'></barlist>
             </ul>
         </div>
         <script>
+Vue.component('custom-item', {
+    props: {
+        id: {type: Number, required: true},
+        name: {type: String, required: true},
+        selection: {type: Number, required: true},
+    },
+    template: "<li class='item' v-bind:class='{selected: id == selection }' v-on:click='select'>" +
+                    "{{ name }}" +
+              "</li>",
+    methods: {
+        select: function(){
+            this.$emit('select', this.id);
+        }
+    }
+})
+
 
 Vue.component('barlist', {
     props: ['list', 'selection'],
@@ -83,15 +99,12 @@ Vue.component('barlist', {
         "<li class='listtable'>" +
             "<div class='caption'>{{ list.title }}</div>" +
             "<ul class='flex-col'>" +
-                "<li v-for='itm in list.items' class='item' v-bind:class='{selected: itm.id == selection.id }' v-on:click='select(itm)'>" +
-                    "{{ itm.name }}" +
-                "</li>" +
+                "<custom-item v-for='itm in list.items' v-bind:id='itm.id' v-bind:name='itm.name' v-bind:selection='selection' @select='select'>" +
             "</ul>" +
         "</li>",
     methods: {
-        select: function(itm){
-            this.selection.id = itm.id;
-            this.selection.name = itm.name;
+        select: function(id){
+            this.$emit('select', id);
         }
     }
 })
@@ -120,18 +133,27 @@ var app = new Vue({
                 { id: 12, name: 'さしすせそたちつてとなにぬねのはひふへほ'}
             ],
         }, 
-        selected: { id: 0, name:''}
+        selected:  0
     },
     methods: {
         moveLeft: function() {
-            var selected = this.selected.id;
-            this.listA.items.push({id: selected, name: this.selected.name});
-            this.listB.items = _.filter(this.listB.items, function(itm){ return itm.id !== selected });
+            var selected = this.selected;
+            var target = _.find(this.listB.items, function(itm) { return itm.id === selected });
+            if (target) {
+                this.listA.items.push(target)
+                this.listB.items = _.filter(this.listB.items, function(itm) { return itm.id !== selected });
+            }
         },
         moveRight: function() {
-            var selected = this.selected.id;
-            this.listB.items.push({id: selected, name: this.selected.name});
-            this.listA.items = _.filter(this.listA.items , function(itm){ return itm.id !== selected });
+            var selected = this.selected;
+            var target = _.find(this.listA.items, function(itm) { return itm.id === selected });
+            if (target) {
+                this.listB.items.push(_.find(this.listA.items, function(itm) { return itm.id === selected }));
+                this.listA.items = _.filter(this.listA.items , function(itm) { return itm.id !== selected });
+            }
+        },
+        update: function(id) {
+            if(id) this.selected = id;
         }
     }
 })
